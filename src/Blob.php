@@ -18,27 +18,14 @@
 
 namespace FastGit;
 
-class GitCommit extends GitObject
+class Blob extends Object
 {
-    protected $tree = null;
-    protected $parents = [];
-    protected $author = null;
-    protected $committer = null;
-    protected $message = null;
+    protected $body;
 
     protected function init($body)
     {
-        list ($headers, $message) = self::messageParser($body);
-
-        $this->tree = $headers['tree'][0];
-        $this->parents = array_key_exists('parent', $headers) ? $headers['parent'] : [];
-        $this->author = $headers['author'][0];
-        $this->committer = $headers['committer'][0];
+        $this->body = $body;
     }
 
-    public function getTree() { return $this->tree; }
-    public function getParents() { return $this->parents; }
-    public function getAuthor() { return $this->author; }
-    public function getCommitter() { return $this->committer; }
-    public function getMessage() { return $this->message; }
+    public function getBody() { return $this->body; }
 }

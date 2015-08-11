@@ -18,7 +18,7 @@
 
 namespace FastGit;
 
-class GitTree extends GitObject
+class Tree extends Object
 {
     protected $leafs = [];
 
@@ -46,7 +46,7 @@ class GitTree extends GitObject
             $type = $dmode >> 12;
             $mode = $dmode & 0xFFF;
 
-            $this->leafs[] = new GitTreeLeaf($type, $mode, $hash, $name);
+            $this->leafs[] = new TreeLeaf($type, $mode, $hash, $name);
         }
     }
 

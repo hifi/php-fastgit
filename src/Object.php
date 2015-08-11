@@ -18,7 +18,7 @@
 
 namespace FastGit;
 
-class GitObject
+class Object
 {
     protected $hash;
     protected $type;
@@ -43,10 +43,10 @@ class GitObject
         list ($type, $size) = explode(' ', $prefix, 2);
 
         switch ($type) {
-            case 'commit':  return new GitCommit($hash, $type, $size, $body);
-            case 'tree':    return new GitTree($hash, $type, $size, $body);
-            case 'blob':    return new GitBlob($hash, $type, $size, $body);
-            default:        return new GitObject($hash, $type, $size, $body);
+            case 'commit':  return new Commit($hash, $type, $size, $body);
+            case 'tree':    return new Tree($hash, $type, $size, $body);
+            case 'blob':    return new Blob($hash, $type, $size, $body);
+            default:        return new Object($hash, $type, $size, $body);
         }
     }
 

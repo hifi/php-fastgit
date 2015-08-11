@@ -18,7 +18,7 @@
 
 namespace FastGit;
 
-class GitTreeLeaf
+class TreeLeaf
 {
     protected $type;
     protected $mode;

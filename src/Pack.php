@@ -18,7 +18,7 @@
 
 namespace FastGit;
 
-class GitPack
+class Pack
 {
     // streams
     protected $idx;

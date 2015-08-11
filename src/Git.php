@@ -60,7 +60,7 @@ class Git
             $packPath = sprintf('%s/%s.pack', $pi['dirname'], $pi['filename']);
 
             if (file_exists($packPath)) {
-                $this->packs[] = new GitPack($idxPath, $packPath);
+                $this->packs[] = new Pack($idxPath, $packPath);
             }
         }
     }
@@ -103,15 +103,15 @@ class Git
         if (!$data)
             throw new \Exception($name);
 
-        return GitObject::create($data, $hash);
+        return Object::create($data, $hash);
     }
 
     public function getHead($name)
     {
         $head = $this->get('heads/' . $name);
 
-        if (!($head instanceof GitCommit))
-            throw new \Exception('GitCommit expected, got' . get_class($head));
+        if (!($head instanceof Commit))
+            throw new \Exception('Commit expected, got' . get_class($head));
 
         return $head;
     }
@@ -120,8 +120,8 @@ class Git
     {
         $tree = $this->get($name);
 
-        if (!($tree instanceof GitTree))
-            throw new \Exception('GitTree expected, got ' . get_class($tree));
+        if (!($tree instanceof Tree))
+            throw new \Exception('Tree expected, got ' . get_class($tree));
 
         return $tree;
     }
@@ -130,8 +130,8 @@ class Git
     {
         $blob = $this->get($name);
 
-        if (!($blob instanceof GitBlob))
-            throw new \Exception('GitBlob expected, got ' . get_class($blob));
+        if (!($blob instanceof Blob))
+            throw new \Exception('Blob expected, got ' . get_class($blob));
 
         return $blob;
     }
