@@ -37,6 +37,11 @@ class Commit extends Object
         $this->message = $message;
     }
 
+    public function getShortMessage()
+    {
+        return explode("\n", $this->message, 2)[0];
+    }
+
     public function getTree() { return $this->tree; }
     public function getParents() { return $this->parents; }
     public function getAuthor() { return $this->author; }

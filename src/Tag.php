@@ -36,6 +36,11 @@ class Tag extends Object
         $this->message = $message;
     }
 
+    public function getShortMessage()
+    {
+        return explode("\n", $this->message, 2)[0];
+    }
+
     public function getObject() { return $this->object; }
     public function getObjectType() { return $this->objectType; }
     public function getTagger() { return $this->tagger; }
