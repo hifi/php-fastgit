@@ -18,12 +18,26 @@
 
 namespace FastGit;
 
+/**
+ * Git repository access.
+ */
 class Git
 {
+    /** @var string Path to git repository. */
     protected $path;
+
+    /** @var string[] Lookup array for refs. */
     protected $refs = [];
+
+    /** @var Pack[] Loaded packs. */
     protected $packs = [];
 
+    /**
+     * Open a git repository.
+     * 
+     * @param string $path Path to git repository.
+     * @throws \InvalidArgumentException
+     */
     public function __construct($path)
     {
         $this->path = $path;
@@ -65,6 +79,14 @@ class Git
         }
     }
 
+    /**
+     * Get any object from the repository.
+     * 
+     * @param string $name Reference name or (partial) object hash
+     * @return Object Immutable Object of given name.
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     */
     public function get($name)
     {
         $hash = false;
@@ -106,11 +128,29 @@ class Git
         return Object::create($data, $hash);
     }
 
+    /**
+     * Get a head commit from repository.
+     * 
+     * @param string $name Head name.
+     * @return Commit Immutable Commit of given name.
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     * @throws \UnexpectedValueException
+     */
     public function getHead($name)
     {
         return $this->getCommit('heads/' . $name);
     }
 
+    /**
+     * Get a commit from repository.
+     * 
+     * @param string $name Commit hash (partial is ok) or any ref that points to a commit.
+     * @return Commit Immutable Commit of given name.
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     * @throws \UnexpectedValueException
+     */
     public function getCommit($name)
     {
         $head = $this->get($name);
@@ -121,6 +161,15 @@ class Git
         return $head;
     }
 
+    /**
+     * Get a tag from repository.
+     * 
+     * @param string $name Tag name.
+     * @return Tag Immutable Tag of given name.
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     * @throws \UnexpectedValueException
+     */
     public function getTag($name)
     {
         $tag = $this->get('tags/' . $name);
@@ -131,6 +180,15 @@ class Git
         return $tag;
     }
 
+    /**
+     * Get a tree from repository.
+     * 
+     * @param string $name Tree hash (partial is ok).
+     * @return Tree Immutable Tree of given name.
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     * @throws \UnexpectedValueException
+     */
     public function getTree($name)
     {
         $tree = $this->get($name);
@@ -141,6 +199,15 @@ class Git
         return $tree;
     }
 
+    /**
+     * Get a blob from repository.
+     * 
+     * @param string $name Blob hash (partial is ok).
+     * @return Blob Immutable Blob of given name.
+     * @throws \InvalidArgumentException
+     * @throws \OutOfBoundsException
+     * @throws \UnexpectedValueException
+     */
     public function getBlob($name)
     {
         $blob = $this->get($name);

@@ -18,11 +18,21 @@
 
 namespace FastGit;
 
+/**
+ * A git tag object.
+ */
 class Tag extends Object
 {
+    /** @var string Referenced object hash. */
     protected $object;
+
+    /** @var string Referenced object type. */
     protected $objectType;
+
+    /** @var string Tagger name, email and timestamp. */
     protected $tagger;
+
+    /** @var string Tag message. */
     protected $message;
 
     protected function init($body)
@@ -41,8 +51,31 @@ class Tag extends Object
         return explode("\n", $this->message, 2)[0];
     }
 
+    /**
+     * Get referenced object hash.
+     * 
+     * @return string
+     */
     public function getObject() { return $this->object; }
+
+    /**
+     * Get referenced object type.
+     * 
+     * @return string
+     */
     public function getObjectType() { return $this->objectType; }
+
+    /**
+     * Get tagger name, email and timestamp.
+     * 
+     * @return string
+     */
     public function getTagger() { return $this->tagger; }
+
+    /**
+     * Get tag message.
+     * 
+     * @return string
+     */
     public function getMessage() { return $this->message; }
 }

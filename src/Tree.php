@@ -18,8 +18,12 @@
 
 namespace FastGit;
 
+/**
+ * A git tree object.
+ */
 class Tree extends Object
 {
+    /** @var TreeLeaf[] Leaves of the tree. */
     protected $leafs = [];
 
     protected function init($body)
@@ -50,5 +54,10 @@ class Tree extends Object
         }
     }
 
+    /**
+     * Get the array of leaves this tree has.
+     * 
+     * @return TreeLeaf[]
+     */
     public function getLeafs() { return $this->leafs; }
 }

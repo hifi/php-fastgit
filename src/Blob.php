@@ -18,8 +18,12 @@
 
 namespace FastGit;
 
+/**
+ * A git blob object.
+ */
 class Blob extends Object
 {
+    /** @var string Raw blob body. */
     protected $body;
 
     protected function init($body)
@@ -27,5 +31,10 @@ class Blob extends Object
         $this->body = $body;
     }
 
+    /**
+     * Get blob object body.
+     * 
+     * @return string Full raw blob body.
+     */
     public function getBody() { return $this->body; }
 }

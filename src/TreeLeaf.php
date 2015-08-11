@@ -18,11 +18,21 @@
 
 namespace FastGit;
 
+/**
+ * A single leaf of a git tree object.
+ */
 class TreeLeaf
 {
+    /** @var int Type of the leaf. */
     protected $type;
+
+    /** @var int UNIX file permissions. */
     protected $mode;
+
+    /** @var string Hash of the object. */
     protected $hash;
+
+    /** @var string Name of the leaf. */
     protected $name;
 
     const TYPE_DIR      = 4;
@@ -37,6 +47,14 @@ class TreeLeaf
         self::TYPE_GITLINK  => 'gink',
     ];
 
+    /**
+     * Construct a tree leaf.
+     * 
+     * @param int $type Type of the leaf.
+     * @param int $mode UNIX file permissions.
+     * @param string $hash Hash of the blob object.
+     * @param string $name Name of the leaf.
+     */
     public function __construct($type, $mode, $hash, $name)
     {
         $this->type = $type;
@@ -50,8 +68,31 @@ class TreeLeaf
         return sprintf('%02o%04o %s %s    %s', $this->type, $this->mode, self::$strTypes[$this->type], $this->hash, $this->name);
     }
 
+    /**
+     * Get type of the leaf.
+     * 
+     * @return int
+     */
     public function getType() { return $this->type; }
+
+    /**
+     * Get UNIX file permissions of the leaf.
+     * 
+     * @return int
+     */
     public function getMode() { return $this->mode; }
+
+    /**
+     * Get hash of the referenced object.
+     * 
+     * @return string
+     */
     public function getHash() { return $this->hash; }
+
+    /**
+     * Get name of the leaf.
+     * 
+     * @return string
+     */
     public function getName() { return $this->name; }
 }

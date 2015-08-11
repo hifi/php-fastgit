@@ -18,12 +18,30 @@
 
 namespace FastGit;
 
+/**
+ * A git object.
+ * 
+ * Usually this class is not used directly but serves as a fallback.
+ */
 class Object
 {
+    /** @var string SHA-1 hash of the object. */
     protected $hash;
+
+    /** @var string Type of the object. */
     protected $type;
+
+    /** @var int Size of the object body. */
     protected $size;
 
+    /**
+     * Construct new immutable Object.
+     * 
+     * @param string $hash
+     * @param string $type
+     * @param int $size
+     * @param string $body
+     */
     private function __construct($hash, $type, $size, $body)
     {
         $this->hash = $hash;
@@ -33,8 +51,22 @@ class Object
         $this->init($body);
     }
 
+    /**
+     * Intialize object from body data, called by constructor.
+     * 
+     * @param string $body Object body data.
+     */
     protected function init($body) { }
 
+    /**
+     * Create a new object from raw data.
+     * 
+     * This method automatically returns the best matching object sub class.
+     * 
+     * @param string $raw Raw binary data of any git object.
+     * @param string $hash Optional pre-calculated SHA-1 hash of the raw data.
+     * @return Commit|Tag|Tree|Blob|Object
+     */
     static function create($raw, $hash = false)
     {
         $hash = ($hash !== false && strlen($hash) == 40) ? $hash : sha1($raw);
@@ -51,6 +83,12 @@ class Object
         }
     }
 
+    /**
+     * Parses an object body text into header and message.
+     * 
+     * @param string $body Object body text.
+     * @return array
+     */
     static function messageParser($body)
     {
         list ($rawHeaders, $message) = explode("\n\n", $body, 2);
@@ -69,7 +107,24 @@ class Object
         return sprintf('%s %d %s', $this->type, $this->size, $this->hash);
     }
 
+    /**
+     * Get object SHA-1 hash.
+     * 
+     * @return string
+     */
     public function getHash() { return $this->hash; }
+
+    /**
+     * Get object type.
+     * 
+     * @return string
+     */
     public function getType() { return $this->type; }
+
+    /**
+     * Get object body size.
+     * 
+     * @return int
+     */
     public function getSize() { return $this->size; }
 }

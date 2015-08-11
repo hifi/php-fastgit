@@ -18,12 +18,24 @@
 
 namespace FastGit;
 
+/**
+ * A git commit object.
+ */
 class Commit extends Object
 {
+    /** @var string Referenced tree hash. */
     protected $tree = null;
+
+    /** @var string[] Commit parent hashes. */
     protected $parents = [];
+
+    /** @var string Author name, email and timestamp. */
     protected $author = null;
+
+    /** @var string Committer name, email and timestamp */
     protected $committer = null;
+
+    /** @var string Commit message. */
     protected $message = null;
 
     protected function init($body)
@@ -37,14 +49,48 @@ class Commit extends Object
         $this->message = $message;
     }
 
+    /**
+     * Get the first line of commit message.
+     * 
+     * @return string
+     */
     public function getShortMessage()
     {
         return explode("\n", $this->message, 2)[0];
     }
 
+    /**
+     * Get referenced tree hash.
+     * 
+     * @return string
+     */
     public function getTree() { return $this->tree; }
+
+    /**
+     * Get commit parent hashes.
+     * 
+     * @return string[]
+     */
     public function getParents() { return $this->parents; }
+
+    /**
+     * Get author name, email and timestamp.
+     * 
+     * @return string
+     */
     public function getAuthor() { return $this->author; }
+
+    /**
+     * Get committer name, email and timestamp.
+     * 
+     * @return string
+     */
     public function getCommitter() { return $this->committer; }
+
+    /**
+     * Get full commit message.
+     * 
+     * @return string
+     */
     public function getMessage() { return $this->message; }
 }

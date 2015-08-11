@@ -20,12 +20,16 @@ namespace FastGit;
 
 class Pack
 {
-    // streams
+    /** @var resource Index file stream. */
     protected $idx;
+
+    /** @var resource Pack file stream. */
     protected $pack;
 
-    // index data
+    /** @var array Fanout array. */
     protected $fanout = [];
+
+    /** @var int Last count of the fanout table. Lookup optimization. */
     protected $fanout_last;
 
     const OBJ_COMMIT    = 1;
@@ -37,6 +41,15 @@ class Pack
 
     protected static $types = [ '!0!', 'commit', 'tree', 'blob', 'tag', '!5!', 'ofs_delta', 'ref_delta', '!8!' ];
 
+    /**
+     * Open a pack file.
+     * 
+     * @param string $idxPath Path to index file.
+     * @param string $packPath Path to pack file.
+     * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
+     * @throws \UnderflowException
+     */
     public function __construct($idxPath, $packPath)
     {
         $this->idx = fopen($idxPath, 'r');
@@ -79,6 +92,17 @@ class Pack
         fclose($this->pack);
     }
 
+    /**
+     * Inflate deflated data from open file stream.
+     * 
+     * PHP is buggy and currently (as of 5.6) requires the use of fseek() to
+     * reset the internal buffer so that a stream filter can be applied so this
+     * workaround is implemented.
+     * 
+     * @param resource $fh Open file handle.
+     * @param int $num Number of uncompressed bytes to read.
+     * @return type
+     */
     static function inflateStream($fh, $num)
     {
         fseek($fh, ftell($fh)); // avoid bug in PHP stream buffering when applying a filter
@@ -88,7 +112,18 @@ class Pack
         return $ret;
     }
 
-    // very direct port from jgit
+    /**
+     * Apply delta compression.
+     * 
+     * This is a very direct port from jGit which refers back to actual git
+     * source where this code is around the same. Considered as an algorithm.
+     * 
+     * @param string $base Raw source object that is used as the base.
+     * @param string $delta Raw delta object that contains the opcodes.
+     * @return string Complete raw git object after applying the delta.
+     * @throws \LengthException
+     * @throws \UnexpectedValueException
+     */
     public static function applyDelta($base, $delta)
     {
         list($baseHeader, $baseData) = explode("\0", $base, 2);
@@ -162,6 +197,14 @@ class Pack
         return "$baseType $resLen\0" . $result;
     }
 
+    /**
+     * Search and return a git object from this pack.
+     * 
+     * Accepts partial hashes as well.
+     * 
+     * @param string $hash Hash of the object to look for.
+     * @return boolean|string Raw git object data.
+     */
     public function search($hash)
     {
         $offset = $this->findPackOffset($hash);
@@ -171,6 +214,12 @@ class Pack
         return $this->loadPackData($offset);
     }
 
+    /**
+     * Find pack offset from index file.
+     * 
+     * @param string $hash Hash of the object to look for.
+     * @return boolean|int Offset in the pack file.
+     */
     public function findPackOffset($hash)
     {
         $bhash = hex2bin($hash);
@@ -210,6 +259,12 @@ class Pack
         return ord($blob[3]) | ord($blob[2]) << 8 | ord($blob[1]) << 16 | ord($blob[0]) << 24;
     }
 
+    /**
+     * Load pack data from the pack file.
+     * 
+     * @param int $pack_offset Offset in the pack file.
+     * @return string Raw git object data.
+     */
     public function loadPackData($pack_offset)
     {
         fseek($this->pack, $pack_offset);
