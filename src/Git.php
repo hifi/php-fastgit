@@ -45,8 +45,13 @@ class Git
         if (!is_dir($this->path))
             throw new \InvalidArgumentException('Given path is not a directory.');
 
-        if (!file_exists($this->path . '/HEAD'))
-            throw new \InvalidArgumentException('Given path is not a git repository.');
+        if (!file_exists($this->path . '/HEAD')) {
+            if (file_exists($this->path . '/.git/HEAD')) {
+                $this->path .= '/.git';
+            } else {
+                throw new \InvalidArgumentException('Given path is not a git repository.');
+            }
+        }
 
         // load packed refs
         if (file_exists($this->path . '/packed-refs')) {
