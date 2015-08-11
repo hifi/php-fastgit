@@ -91,8 +91,8 @@ class GitPack
     // very direct port from jgit
     public static function applyDelta($base, $delta)
     {
-        list($baseHeader, $baseData, ) = explode("\0", $base);
-        list($baseType, $baseDataLen, ) = explode(' ', $baseHeader);
+        list($baseHeader, $baseData) = explode("\0", $base, 2);
+        list($baseType, $baseDataLen) = explode(' ', $baseHeader, 2);
 
         $resultPtr = 0;
         $deltaPtr = 0;
