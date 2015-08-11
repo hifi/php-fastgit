@@ -121,6 +121,16 @@ class Git
         return $head;
     }
 
+    public function getTag($name)
+    {
+        $tag = $this->get('tags/' . $name);
+
+        if (!($tag instanceof Tag))
+            throw new \UnexpectedValueException('Tag expected, got' . get_class($tag));
+
+        return $tag;
+    }
+
     public function getTree($name)
     {
         $tree = $this->get($name);

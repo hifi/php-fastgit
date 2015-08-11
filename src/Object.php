@@ -44,6 +44,7 @@ class Object
 
         switch ($type) {
             case 'commit':  return new Commit($hash, $type, $size, $body);
+            case 'tag':     return new Tag($hash, $type, $size, $body);
             case 'tree':    return new Tree($hash, $type, $size, $body);
             case 'blob':    return new Blob($hash, $type, $size, $body);
             default:        return new Object($hash, $type, $size, $body);
