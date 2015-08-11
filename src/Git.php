@@ -105,4 +105,34 @@ class Git
 
         return GitObject::create($data, $hash);
     }
+
+    public function getHead($name)
+    {
+        $head = $this->get('heads/' . $name);
+
+        if (!($head instanceof GitCommit))
+            throw new \Exception('GitCommit expected, got' . get_class($head));
+
+        return $head;
+    }
+
+    public function getTree($name)
+    {
+        $tree = $this->get($name);
+
+        if (!($tree instanceof GitTree))
+            throw new \Exception('GitTree expected, got ' . get_class($tree));
+
+        return $tree;
+    }
+
+    public function getBlob($name)
+    {
+        $blob = $this->get($name);
+
+        if (!($blob instanceof GitBlob))
+            throw new \Exception('GitBlob expected, got ' . get_class($blob));
+
+        return $blob;
+    }
 }
