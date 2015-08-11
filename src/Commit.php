@@ -34,6 +34,7 @@ class Commit extends Object
         $this->parents = array_key_exists('parent', $headers) ? $headers['parent'] : [];
         $this->author = $headers['author'][0];
         $this->committer = $headers['committer'][0];
+        $this->message = $message;
     }
 
     public function getTree() { return $this->tree; }
