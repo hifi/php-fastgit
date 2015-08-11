@@ -43,19 +43,19 @@ class Pack
         $this->pack = fopen($packPath, 'r');
 
         if ($this->idx === false || $this->pack === false)
-            throw new \Exception('Failed to open index or pack for reading.');
+            throw new \InvalidArgumentException('Failed to open index or pack for reading.');
 
         // validate index header
         if (fread($this->idx, 4) != "\377tOc")
-            throw new \Exception('Index file magic is invalid.');
+            throw new \UnexpectedValueException('Index file magic is invalid.');
 
         if (fread($this->idx, 4) != "\0\0\0\2")
-            throw new \Exception('Index file version is unsupported.');
+            throw new \UnexpectedValueException('Index file version is unsupported.');
 
         // populate fanout
         $blob = fread($this->idx, 1024);
         if ($blob === false || strlen($blob) < 1024)
-            throw new \Exception('Failed to read fanout table.');
+            throw new \UnderflowException('Failed to read fanout table.');
 
         $p = 0;
         for ($i = 0; $i < 1024; $i+=4) {
@@ -67,10 +67,10 @@ class Pack
 
         // validate pack header
         if (fread($this->pack, 4) != 'PACK')
-            throw new \Exception('Pack file magic is invalid.');
+            throw new \UnexpectedValueException('Pack file magic is invalid.');
 
         if (fread($this->pack, 4) != "\0\0\0\2")
-            throw new \Exception('Pack file version is unsupported.');
+            throw new \UnexpectedValueException('Pack file version is unsupported.');
     }
 
     public function __destruct()
@@ -106,7 +106,7 @@ class Pack
         } while ($c & 0x80);
 
         if ($baseLen != $baseDataLen)
-            throw new \Exception('base length incorrect');
+            throw new \LengthException('baseLen does not match baseDataLen');
 
         $resLen = 0;
         $shift = 0;
@@ -155,7 +155,7 @@ class Pack
                 $deltaPtr += $cmd;
                 $resultPtr += $cmd;
             } else {
-                throw new \Exception('Zero delta command reserved.');
+                throw new \UnexpectedValueException('Zero delta command reserved.');
             }
         }
 

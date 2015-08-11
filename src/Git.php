@@ -29,10 +29,10 @@ class Git
         $this->path = $path;
 
         if (!is_dir($this->path))
-            throw new \Exception('Given path is not a directory.');
+            throw new \InvalidArgumentException('Given path is not a directory.');
 
         if (!file_exists($this->path . '/HEAD'))
-            throw new \Exception('Given path is not a git repository.');
+            throw new \InvalidArgumentException('Given path is not a git repository.');
 
         // load packed refs
         if (file_exists($this->path . '/packed-refs')) {
@@ -71,13 +71,13 @@ class Git
 
         if (ctype_xdigit($name)) {
             if (strlen($name) < 4)
-                throw new \Exception('Hash needs to be at least 4 characters long.');
+                throw new \InvalidArgumentException('Hash needs to be at least 4 characters long.');
 
             $hash = $name;
         } elseif (array_key_exists($name, $this->refs)) {
             $hash = $this->refs[$name];
         } else {
-            throw new \Exception('Invalid ref: ' . $name);
+            throw new \InvalidArgumentException('Invalid ref: ' . $name);
         }
 
         $data = false;
@@ -101,7 +101,7 @@ class Git
         }
 
         if (!$data)
-            throw new \Exception($name);
+            throw new \OutOfBoundsException($name);
 
         return Object::create($data, $hash);
     }
@@ -111,7 +111,7 @@ class Git
         $head = $this->get('heads/' . $name);
 
         if (!($head instanceof Commit))
-            throw new \Exception('Commit expected, got' . get_class($head));
+            throw new \UnexpectedValueException('Commit expected, got' . get_class($head));
 
         return $head;
     }
@@ -121,7 +121,7 @@ class Git
         $tree = $this->get($name);
 
         if (!($tree instanceof Tree))
-            throw new \Exception('Tree expected, got ' . get_class($tree));
+            throw new \UnexpectedValueException('Tree expected, got ' . get_class($tree));
 
         return $tree;
     }
@@ -131,7 +131,7 @@ class Git
         $blob = $this->get($name);
 
         if (!($blob instanceof Blob))
-            throw new \Exception('Blob expected, got ' . get_class($blob));
+            throw new \UnexpectedValueException('Blob expected, got ' . get_class($blob));
 
         return $blob;
     }
