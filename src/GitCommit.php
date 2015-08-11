@@ -30,10 +30,10 @@ class GitCommit extends GitObject
     {
         list ($headers, $message) = self::messageParser($body);
 
-        $this->tree = $headers['tree'];
+        $this->tree = $headers['tree'][0];
         $this->parents = array_key_exists('parent', $headers) ? $headers['parent'] : [];
-        $this->author = $headers['author'];
-        $this->committer = $headers['committer'];
+        $this->author = $headers['author'][0];
+        $this->committer = $headers['committer'][0];
     }
 
     public function getTree() { return $this->tree; }
