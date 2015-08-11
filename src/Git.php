@@ -92,8 +92,13 @@ class Git
         $hash = false;
 
         if (ctype_xdigit($name)) {
-            if (strlen($name) < 4)
-                throw new \InvalidArgumentException('Hash needs to be at least 4 characters long.');
+            $hash_len = strlen($name);
+
+            if ($hash_len < 4)
+                throw new \InvalidArgumentException('Hash must be at least 4 characters long.');
+
+            if ($hash_len % 2)
+                throw new \InvalidArgumentException('Hash must be divisible by two.');
 
             $hash = $name;
         } elseif (array_key_exists($name, $this->refs)) {
