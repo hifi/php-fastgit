@@ -108,7 +108,12 @@ class Git
 
     public function getHead($name)
     {
-        $head = $this->get('heads/' . $name);
+        return $this->getCommit('heads/' . $name);
+    }
+
+    public function getCommit($name)
+    {
+        $head = $this->get($name);
 
         if (!($head instanceof Commit))
             throw new \UnexpectedValueException('Commit expected, got' . get_class($head));
