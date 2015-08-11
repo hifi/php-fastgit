@@ -37,7 +37,7 @@ class Object
 
     static function create($raw, $hash = false)
     {
-        $hash = $hash ? $hash : sha1($raw);
+        $hash = ($hash !== false && strlen($hash) == 40) ? $hash : sha1($raw);
 
         list ($prefix, $body) = explode("\0", $raw, 2);
         list ($type, $size) = explode(' ', $prefix, 2);
