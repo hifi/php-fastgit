@@ -73,7 +73,7 @@ class Pack
         $p = 0;
         for ($i = 0; $i < 1024; $i+=4) {
             $v = ord($blob[$i + 3]) | ord($blob[$i + 2]) << 8 | ord($blob[$i + 1]) << 16 | ord($blob[$i]) << 24;
-            $this->fanout[$i >> 2] = [ $v - ($v - $p), $v - $p - 1 ];
+            $this->fanout[$i >> 2] = [ $v - ($v - $p), $v - $p ];
             $p = $v;
         }
         $this->fanout_last = $p;
@@ -233,7 +233,7 @@ class Pack
 
         // quick btree search from the index
         $lo = 0;
-        $hi = $count;
+        $hi = $count - 1;
 
         $index = false;
         while (1) {
