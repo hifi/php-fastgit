@@ -23,18 +23,57 @@ namespace FastGit;
  */
 class Blob extends Object
 {
-    /** @var string Raw blob body. */
-    protected $body;
-
-    protected function init($body)
+    /**
+     * Construct new immutable Blob object.
+     * 
+     * @param string $body Raw body of the blob.
+     * @param int $size Size of the blob, optional.
+     * @param string $hash Hash of the blob, optional.
+     * @return Blob
+     */
+    protected function __construct($body, $size = false, $hash = false)
     {
         $this->body = $body;
+        $this->size = $size ? $size : strlen($this->toRaw());
+        $this->hash = $hash ? $hash : sha1((string)$this);
     }
 
     /**
-     * Get blob object body.
+     * Create new immutable Blob object.
      * 
-     * @return string Full raw blob body.
+     * @param string $body Raw body of the blob.
+     * @return Blob
      */
-    public function getBody() { return $this->body; }
+    public static function create($body)
+    {
+        return new self($body);
+    }
+
+    public function __toString()
+    {
+        return 'blob ' . $this->size . "\0" . $this->toRaw();
+    }
+
+    /**
+     * Convert raw object into immutable Blob.
+     * 
+     * @param string $body Raw body of the blob.
+     * @param int $size Size of the body, optional.
+     * @param string $hash SHA-1 hash of the full object including header, optional.
+     * @return Blob
+     */
+    public static function fromRaw($body, $size = false, $hash = false)
+    {
+        return new self($body, $size, $hash);
+    }
+
+    /**
+     * Convert blob into raw object body.
+     * 
+     * @return string
+     */
+    public function toRaw()
+    {
+        return $this->body;
+    }
 }

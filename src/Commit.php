@@ -38,15 +38,116 @@ class Commit extends Object
     /** @var string Commit message. */
     protected $message = null;
 
-    protected function init($body)
+    /**
+     * Construct new immutable Commit object.
+     * 
+     * @param string $tree Referenced tree hash.
+     * @param string[] $parents Commit parent hashes.
+     * @param string $author Author name, email and timestamp.
+     * @param string $committer Committer name, email and timestamp.
+     * @param string $message Commit message.
+     * @param int $size Size of the commit, optional.
+     * @param string $hash Hash of the commit, optional.
+     * @return Commit
+     */
+    protected function __construct($tree, $parents, $author, $committer, $message, $size = false, $hash = false)
+    {
+        $this->tree         = $tree;
+        $this->parents      = $parents;
+        $this->author       = $author;
+        $this->committer    = $committer;
+        $this->message      = $message;
+        $this->size         = $size ? $size : strlen($this->toRaw());
+        $this->hash         = $hash ? $hash : sha1((string)$this);
+    }
+
+    /**
+     * Create new immutable Commit object.
+     * 
+     * @param string $tree Referenced tree hash.
+     * @param string[] $parents Commit parent hashes.
+     * @param string $author Author name, email and timestamp.
+     * @param string $committer Committer name, email and timestamp.
+     * @param string $message Commit message.
+     * @return Commit
+     */
+    public static function create($tree, $parents, $author, $committer, $message)
+    {
+        return new self($tree, $parents, $author, $committer, $message);
+    }
+
+    public function __toString()
+    {
+        return 'commit ' . $this->size . "\0" . $this->toRaw();
+    }
+
+    /**
+     * Convert raw object into immutable Commit.
+     * 
+     * @param string $body Raw body of the commit.
+     * @param int $size Size of the body, optional.
+     * @param string $hash SHA-1 hash of the full commit including header, optional.
+     * @return Commit
+     */
+    public static function fromRaw($body, $size = false, $hash = false)
     {
         list ($headers, $message) = self::messageParser($body);
 
-        $this->tree = $headers['tree'][0];
-        $this->parents = array_key_exists('parent', $headers) ? $headers['parent'] : [];
-        $this->author = $headers['author'][0];
-        $this->committer = $headers['committer'][0];
-        $this->message = $message;
+        return new self(
+            $headers['tree'][0],
+            array_key_exists('parent', $headers) ? $headers['parent'] : [],
+            $headers['author'][0],
+            $headers['committer'][0],
+            $message,
+            $size,
+            $hash
+        );
+    }
+
+    /**
+     * Convert commit into raw object body.
+     * 
+     * @return string
+     */
+    public function toRaw()
+    {
+        if ($this->body === null) {
+            $lines = ["tree " . $this->tree];
+
+            foreach ($this->parents as $parent)
+                $lines[] = "parent " . $parent;
+
+            $lines[] = 'author ' . $this->author;
+
+            if ($this->committer)
+                $lines[] = 'committer ' . $this->committer;
+
+            $lines[] = '';
+            $lines[] = $this->message;
+
+            $this->body = implode("\n", $lines);
+        }
+
+        return $this->body;
+    }
+
+    /**
+     * Parses an object body text into header and message.
+     * 
+     * @param string $body Object body text.
+     * @return array
+     */
+    static function messageParser($body)
+    {
+        list ($rawHeaders, $message) = explode("\n\n", $body, 2);
+
+        $headers = [];
+        foreach (explode("\n", $rawHeaders) as $header) {
+            list ($type, $value) = explode(' ', $header, 2);
+            $headers[$type][] = $value;
+        }
+
+        return [ $headers, $message ];
     }
 
     /**

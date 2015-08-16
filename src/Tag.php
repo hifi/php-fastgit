@@ -27,7 +27,10 @@ class Tag extends Object
     protected $object;
 
     /** @var string Referenced object type. */
-    protected $objectType;
+    protected $type;
+
+    /** @var string Tag name. */
+    protected $tag;
 
     /** @var string Tagger name, email and timestamp. */
     protected $tagger;
@@ -35,17 +38,101 @@ class Tag extends Object
     /** @var string Tag message. */
     protected $message;
 
-    protected function init($body)
+    /**
+     * Construct new immutable Tag object.
+     * 
+     * @param string $object Referenced object hash.
+     * @param string $type Referenced object type.
+     * @param string $tag Tag name.
+     * @param string $tagger Tagger name, email and timestamp.
+     * @param string $message Tag message.
+     * @param int $size Size of the tag, optional.
+     * @param string $hash Hash of the tag, optional.
+     * @return Tag
+     */
+    protected function __construct($object, $type, $tag, $tagger, $message, $size = false, $hash = false)
     {
-        list($headers, $message) = self::messageParser($body);
-
-        $this->object = $headers['object'][0];
-        $this->objectType = $headers['type'][0];
-        $this->tagger = $headers['tagger'][0];
-
-        $this->message = $message;
+        $this->object   = $object;
+        $this->type     = $type;
+        $this->tag      = $tag;
+        $this->tagger   = $tagger;
+        $this->message  = $message;
+        $this->size     = $size ? $size : strlen($this->toRaw());
+        $this->hash     = $hash ? $hash : sha1((string)$this);
     }
 
+    /**
+     * Create new immutable Tag object.
+     * 
+     * @param string $object Referenced object hash.
+     * @param string $type Referenced object type.
+     * @param string $tag Tag name.
+     * @param string $tagger Tagger name, email and timestamp.
+     * @param string $message Tag message.
+     * @return Tag
+     */
+    public static function create($object, $type, $tag, $tagger, $message)
+    {
+        return new self($object, $type, $tag, $tagger, $message);
+    }
+
+    public function __toString()
+    {
+        return 'tag ' . $this->size . "\0" . $this->toRaw();
+    }
+
+    /**
+     * Convert raw object into immutable Tag.
+     * 
+     * @param string $body Raw body of the commit.
+     * @param int $size Size of the body, optional.
+     * @param string $hash SHA-1 hash of the full commit including header, optional.
+     * @return Tag
+     */
+    public static function fromRaw($body, $size = false, $hash = false)
+    {
+        list($headers, $message) = Commit::messageParser($body);
+
+        return new self(
+            $headers['object'][0],
+            $headers['type'][0],
+            $headers['tag'][0],
+            $headers['tagger'][0],
+            $message,
+            $size, 
+            $hash
+        );
+    }
+
+    /**
+     * Convert tag into raw object body.
+     * 
+     * @return string
+     */
+    public function toRaw()
+    {
+        if ($this->body === null) {
+            $lines = [
+                'object '   . $this->object,
+                'type '     . $this->type,
+                'tag '      . $this->tag,
+                'tagger '   . $this->tagger,
+           ];
+
+            $lines[] = '';
+            $lines[] = $this->message;
+
+            $this->body = implode("\n", $lines);
+        }
+
+        return $this->body;
+    }
+
+    /**
+     * Get the first line of tag message.
+     * 
+     * @return string
+     */
     public function getShortMessage()
     {
         return explode("\n", $this->message, 2)[0];
@@ -63,7 +150,7 @@ class Tag extends Object
      * 
      * @return string
      */
-    public function getObjectType() { return $this->objectType; }
+    public function getType() { return $this->type; }
 
     /**
      * Get tagger name, email and timestamp.

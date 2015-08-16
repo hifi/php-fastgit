@@ -65,7 +65,7 @@ class TreeLeaf
 
     public function __toString()
     {
-        return sprintf('%02o%04o %s %s    %s', $this->type, $this->mode, self::$strTypes[$this->type], $this->hash, $this->name);
+        return sprintf("%o%04o %s\0%s", $this->type, $this->mode, $this->name, hex2bin($this->hash));
     }
 
     /**

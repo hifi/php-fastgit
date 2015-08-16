@@ -135,7 +135,18 @@ class Git
         if (!$data)
             throw new \OutOfBoundsException($name);
 
-        return Object::create($data, $hash);
+        $hash = strlen($hash) == 40 ? $hash : sha1($data);
+
+        list ($prefix, $body) = explode("\0", $data, 2);
+        list ($type, $size) = explode(' ', $prefix, 2);
+
+        switch ($type) {
+            case 'commit':  return Commit::fromRaw($body, $size, $hash);
+            case 'tag':     return Tag::fromRaw($body, $size, $hash);
+            case 'tree':    return Tree::fromRaw($body, $size, $hash);
+            case 'blob':    return Blob::fromRaw($body, $size, $hash);
+            default:        throw new InvalidArgumentException($type);
+        }
     }
 
     /**
